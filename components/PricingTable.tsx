@@ -140,7 +140,7 @@ function Row({
   return (
     <tr
       id={`line-${line.id}`}
-      className={`border-b border-line2 align-middle ${
+      className={`border-b border-line2 align-top ${
         p.belowCost ? "bg-danger-row" : "bg-row"
       } ${saving ? "opacity-60" : ""}`}
     >
