@@ -30,8 +30,8 @@ export default function QuoteSummary({
   const gpHealthy = !floor.belowFloor;
 
   const clientPct = Math.min(100, (clientPays / quote.clientCeiling) * 100);
-  const nettPct = Math.min(clientPct, (supplierNett / quote.clientCeiling) * 100);
   const headroomPct = ceiling.over ? 0 : Math.max(0, 100 - clientPct);
+  const showHeadroomInBar = !ceiling.over && headroomPct >= 10;
 
   function scrollToLine(id: string) {
     document.getElementById(`line-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -39,84 +39,81 @@ export default function QuoteSummary({
 
   return (
     <section>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 text-[12px]">
-        <p>
-          <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-ink">Budget</span>
-          <span className="ml-2 text-[#6B635C]">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[12px] text-[#6B635C]">
+        <p className="min-w-0">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3A322C]">
+            Budget
+          </span>
+          <span className="ml-2">
             client ceiling {formatMoney(quote.clientCeiling)}
             <span> · </span>
-            <span className={ceiling.over ? "font-medium text-danger" : "text-ink"}>
+            <span className={ceiling.over ? "text-danger" : undefined}>
               {ceiling.over
                 ? `over by ${formatMoney(-ceiling.delta)}`
                 : `you are ${formatMoney(ceiling.delta)} under`}
             </span>
           </span>
         </p>
-        <p className="tabular-nums text-[#6B635C]">
-          <span className="uppercase tracking-wide">Nett</span> {formatMoney(supplierNett)}
+        <p className="tabular-nums">
+          <span className="uppercase">Nett</span>{" "}
+          <span className="font-semibold text-[#3A322C]">{formatMoney(supplierNett)}</span>
           <span> · </span>
-          <span className="uppercase tracking-wide">Vat</span> {formatMoney(vat)}
+          <span className="uppercase">Vat</span>{" "}
+          <span className="font-semibold text-[#3A322C]">{formatMoney(vat)}</span>
           <span> · </span>
-          GP {formatMoney(pricing.totals.gp)}
+          <span className="uppercase">Gp</span>{" "}
+          <span className="font-semibold text-[#3A322C]">{formatMoney(pricing.totals.gp)}</span>
           <span> · </span>
-          <span className={`font-medium ${gpHealthy ? "text-positive" : "text-warn"}`}>
+          <span className={`font-semibold ${gpHealthy ? "text-positive" : "text-warn"}`}>
             {formatGpPct(pricing.totals.blendedGpPct)}
           </span>
         </p>
       </div>
 
-      <div className="relative mt-8">
-        {!ceiling.over && (
-          <div
-            className="absolute -top-6 z-10 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-white px-2 py-0.5 text-[11px] text-ink shadow-card"
-            style={{ left: `${clientPct}%` }}
-          >
-            {formatMoney(clientPays)} client price
-            {prov.provisional ? " (provisional)" : ""}
-          </div>
-        )}
-
-        <div className="flex h-8 overflow-hidden rounded-md bg-[#EDE4D6]">
+      <div className="mt-1.5">
+        <div className="relative h-5 overflow-hidden rounded-full bg-[#EAE0D7]">
           {ceiling.over ? (
-            <div className="h-full w-full bg-danger" />
+            <div className="absolute inset-0 bg-danger" />
           ) : (
-            <>
-              <div className="h-full bg-[#E4D4C2]" style={{ width: `${nettPct}%` }} />
-              <div
-                className="h-full bg-terracotta"
-                style={{ width: `${Math.max(0, clientPct - nettPct)}%` }}
-              />
-              {headroomPct > 0 && (
-                <div
-                  className="flex h-full items-center justify-end bg-[#EDE8E0] pr-2 text-[11px] text-[#8A8178]"
-                  style={{ width: `${headroomPct}%` }}
-                >
-                  {headroomPct > 6 && <span className="whitespace-nowrap">headroom {formatMoney(ceiling.delta)}</span>}
-                </div>
-              )}
-            </>
+            <div
+              className="absolute inset-y-0 left-0"
+              style={{
+                width: `${Math.min(100, clientPct)}%`,
+                background: "linear-gradient(90deg, #D0BCB2 0%, #B86844 100%)",
+              }}
+            />
+          )}
+          <div className="relative z-[1] flex h-full items-center justify-between px-3">
+            <span className="truncate text-[11px] font-semibold leading-none text-[#2C241E]">
+              {formatMoney(clientPays)} client price
+            </span>
+            {showHeadroomInBar && (
+              <span className="shrink-0 text-[11px] leading-none text-[#6B635C]">
+                headroom {formatMoney(ceiling.delta)}
+              </span>
+            )}
+          </div>
+          {!ceiling.over && (
+            <div
+              className="pointer-events-none absolute inset-y-0 z-[2] w-[2px] -translate-x-1/2 rounded-full bg-[#2C241E]/55"
+              style={{ left: `${Math.min(99.4, Math.max(clientPct, 1.2))}%` }}
+              aria-hidden
+            />
           )}
         </div>
-        {!ceiling.over && (
-          <div
-            className="pointer-events-none absolute top-[-3px] h-[38px] w-px bg-ink/70"
-            style={{ left: `${clientPct}%` }}
-            aria-hidden
-          />
-        )}
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-4 text-[11px] text-[#8A8178]">
+      <div className="mt-1.5 flex flex-wrap items-center gap-4 text-[11px] text-[#6B635C]">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-[2px] bg-[#E4D4C2]" />
+          <span className="h-2 w-2 rounded-[1px] bg-[#E2E3DE]" />
           supplier NETT
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-[2px] ${ceiling.over ? "bg-danger" : "bg-terracotta"}`} />
+          <span className={`h-2 w-2 rounded-[1px] ${ceiling.over ? "bg-danger" : "bg-terracotta"}`} />
           client price
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-3 w-px bg-ink/70" />
+          <span className="h-2.5 w-px bg-[#3A322C]" />
           client ceiling
         </span>
       </div>
@@ -127,24 +124,24 @@ export default function QuoteSummary({
             <button
               type="button"
               onClick={() => scrollToLine(underwater[0])}
-              className="rounded-full bg-danger-soft px-3 py-1 font-medium text-danger"
+              className="rounded-full bg-danger-soft px-3 py-1 font-normal text-danger"
             >
               {underwater.length} line{underwater.length > 1 ? "s" : ""} below cost →
             </button>
           )}
           {ceiling.over && (
-            <span className="rounded-full bg-danger-soft px-3 py-1 font-medium text-danger">
+            <span className="rounded-full bg-danger-soft px-3 py-1 font-normal text-danger">
               Over ceiling by {formatMoney(-ceiling.delta)}
             </span>
           )}
           {prov.provisional && (
-            <span className="rounded-full bg-warn-soft px-3 py-1 font-medium text-warn">
+            <span className="rounded-full bg-warn-soft px-3 py-1 font-normal text-warn">
               Provisional total · from {formatMoney(prov.fromClientPays)} · excludes{" "}
               {prov.excludedCount} unpriced line{prov.excludedCount > 1 ? "s" : ""}
             </span>
           )}
           {floor.belowFloor && (
-            <span className="rounded-full bg-warn-soft px-3 py-1 font-medium text-warn">
+            <span className="rounded-full bg-warn-soft px-3 py-1 font-normal text-warn">
               Blended margin {formatGpPct(floor.blendedPct)} below {BLENDED_MARGIN_FLOOR_PCT}% floor
             </span>
           )}

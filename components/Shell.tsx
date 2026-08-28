@@ -20,7 +20,6 @@ import {
   IconUser,
   IconCheck,
   IconCircle,
-  IconCircleDot,
 } from "./icons";
 
 type BadgeTone = "neutral" | "alert";
@@ -209,46 +208,59 @@ export function TopBar() {
   );
 }
 
+function StepDoneMark() {
+  return (
+    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-[#7A8479] bg-[#DEE8DE] text-[#687468]">
+      <IconCheck size={11} strokeWidth={2.2} />
+    </span>
+  );
+}
+
+function StepCurrentMark() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" className="shrink-0">
+      <circle cx="10" cy="10" r="9" fill="#B86844" />
+      <circle cx="10" cy="10" r="5.25" fill="none" stroke="#FFF8F2" strokeWidth="1.75" />
+    </svg>
+  );
+}
+
+function StepLaterMark() {
+  return (
+    <span className="grid h-5 w-5 shrink-0 place-items-center text-[#C5BDB2]">
+      <IconCircle size={18} />
+    </span>
+  );
+}
+
 export function Stepper() {
   const activeIndex = STEPS.indexOf(ACTIVE_STEP);
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1.5">
       {STEPS.map((step, i) => {
         const done = i < activeIndex;
         const isActive = step === ACTIVE_STEP;
         return (
           <div
             key={step}
-            className={`flex min-w-0 flex-1 items-center gap-2 rounded-lg border px-3 py-2.5 ${
+            className={`flex min-w-0 flex-1 items-center gap-1.5 rounded-md px-2.5 py-2 ${
               isActive
-                ? "border-terracotta bg-[#F8E8DC]"
-                : "border-line bg-white"
+                ? "border-2 border-[#C4A18E] bg-[#F2E1D9]"
+                : "border border-[#EFECE5] bg-[#FBF8F1]"
             }`}
           >
-            {done ? (
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-positive text-white">
-                <IconCheck size={11} />
-              </span>
-            ) : isActive ? (
-              <span className="grid h-5 w-5 shrink-0 place-items-center text-terracotta">
-                <IconCircleDot size={18} />
-              </span>
-            ) : (
-              <span className="grid h-5 w-5 shrink-0 place-items-center text-[#C4B8A8]">
-                <IconCircle size={16} />
-              </span>
-            )}
-            <div className="min-w-0">
+            {done ? <StepDoneMark /> : isActive ? <StepCurrentMark /> : <StepLaterMark />}
+            <div className="min-w-0 leading-none">
               <div
-                className={`text-[9px] font-medium uppercase tracking-[0.12em] ${
+                className={`text-[8px] font-semibold uppercase tracking-[0.12em] ${
                   isActive ? "text-terracotta" : "text-[#A09890]"
                 }`}
               >
                 Step {i + 1}
               </div>
               <div
-                className={`truncate text-[13px] ${
-                  isActive ? "font-medium text-ink" : done ? "text-ink" : "text-[#8A8178]"
+                className={`mt-px truncate text-[12px] font-semibold leading-none ${
+                  isActive || done ? "text-ink" : "text-[#8A8178]"
                 }`}
               >
                 {step}
@@ -261,6 +273,9 @@ export function Stepper() {
   );
 }
 
+const PILL =
+  "inline-flex items-center gap-1.5 rounded-full border border-[#E8DCC8] bg-[#FBF7F1] px-3 py-1.5 text-[12px] font-normal text-[#5C564E] hover:bg-white";
+
 export function Toolbar({
   pax,
   onReset,
@@ -268,32 +283,38 @@ export function Toolbar({
   pax: number;
   onReset: () => void;
 }) {
-  const pills = ["Itemized", "Ranges", "Display", `Set pax - ${pax}`, "USD", "Summary"];
   return (
-    <div className="mb-3 flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-1.5">
-        {pills.map((label) => {
-          const active = label === "Itemized";
-          return (
-            <button
-              key={label}
-              type="button"
-              className={`rounded-full px-3 py-1.5 text-[12px] font-medium ${
-                active
-                  ? "bg-terracotta text-white"
-                  : "border border-line bg-panel text-ink/80 hover:bg-white"
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
+        <div className="inline-flex rounded-full border border-[#E8DCC8] bg-[#f0e6dc] p-0.5">
+          <button
+            type="button"
+            className="rounded-full bg-terracotta px-3 py-1 text-[12px] font-medium text-white"
+          >
+            Itemized
+          </button>
+          <button type="button" className="rounded-full px-3 py-1 text-[12px] font-normal text-[#5C564E]">
+            Ranges
+          </button>
+        </div>
+        <button type="button" className={PILL}>
+          <IconSliders size={13} />
+          Display
+        </button>
+        <button type="button" className={PILL}>
+          <IconUser size={13} />
+          Set pax · {pax}
+        </button>
+        <button type="button" className={PILL}>
+          <IconBanknote size={13} />
+          USD
+        </button>
+        <button type="button" className={PILL}>
+          <IconFile size={13} />
+          Summary
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={onReset}
-        className="shrink-0 rounded-lg border border-line bg-panel px-3 py-1.5 text-[12px] text-muted hover:bg-white hover:text-ink"
-      >
+      <button type="button" onClick={onReset} className={PILL}>
         Reset markups
       </button>
     </div>

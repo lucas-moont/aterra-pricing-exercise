@@ -364,3 +364,12 @@ export function IconX(p: IconProps) {
     </Svg>
   );
 }
+
+export function IconDollar(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M12 3v18" />
+      <path d="M16.5 7.5c0-2.2-2-3.5-4.5-3.5S7.5 5.6 7.5 7.8c0 4.4 9 2.2 9 6.8 0 2.3-2.1 3.9-4.5 3.9S7.5 16.8 7.5 14.8" />
+    </Svg>
+  );
+}
