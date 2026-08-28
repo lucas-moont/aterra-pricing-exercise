@@ -1,52 +1,54 @@
-# AterraAI pricing exercise — scaffold
+# AterraAI — Pricing screen
+
+The Price step of AterraAI: a consultant applies commission and markup per line
+and works out what the client pays. It's where the DMC makes or loses its margin.
+Built for the Aterra full-stack exercise.
+
+**Live:** https://aterra-pricing-exercise-two.vercel.app
 
 ## Run it
 
 ```
 npm install
-npm run dev
+npm run dev        # http://localhost:3000
+npm test           # unit tests (Vitest)
+npm run e2e        # end-to-end (Playwright)
 ```
 
-Then open http://localhost:3000
-
-Node 18 or later. Nothing else to configure.
+Node 18+.
 
 ## What's here
 
-```
-app/page.tsx              server component, loads the quote and renders the table
-app/api/quote/route.ts    GET / PATCH / DELETE for the quote  (already written for you)
-components/PricingTable   a plain, non-interactive rendering of the data
-lib/types.ts              the data model
-lib/seed.ts               the quotation data
-lib/store.ts              server-side store  (already written for you)
-```
+- A pure, exhaustively-tested pricing engine (`lib/pricing.ts`) — the single
+  source of truth for every derived number.
+- A live, editable table with the five moments the founder's happy-path design
+  didn't cover: over-ceiling, a below-cost line, an unpriced line (provisional
+  total), a thin blended margin, and save failure.
+- A bespoke, accessible line-detail drawer (`components/LineDetailDrawer.tsx`) —
+  the full cost waterfall, built from scratch.
+- Optimistic save with rollback; edits persist across a refresh.
+- Vitest + Playwright + GitHub Actions CI + Vercel.
 
-## What the scaffold does and does not do
+## Docs & decisions
 
-It renders the raw data. The derived columns — Cost + VAT, Client pays, GP, GP % — show
-a dash, because nothing is calculated. Nothing is editable. There are no totals.
-
-That is the exercise. See the brief.
+- [NOTE.md](./NOTE.md) — the 250-word submission note.
+- [CONTEXT.md](./CONTEXT.md) — the domain glossary.
+- [docs/features-and-treatments.md](./docs/features-and-treatments.md) — the five
+  states and how each is handled.
+- [docs/adr/0001-gp-excludes-commission.md](./docs/adr/0001-gp-excludes-commission.md)
+  — GP excludes commission; we diverge from the reference screen on purpose.
+- [docs/adr/0002-nett-is-line-total-not-multiplied-by-pax.md](./docs/adr/0002-nett-is-line-total-not-multiplied-by-pax.md)
+  — nett is the line total, not multiplied by pax.
+- [docs/beyond-the-brief.md](./docs/beyond-the-brief.md) — how this scales
+  (agent × Nest × Next, multi-tenant, decisions outside the AI layer).
+- [docs/ui-opportunities.md](./docs/ui-opportunities.md) — from-scratch UI I'd
+  build next.
+- [docs/ci-cd.md](./docs/ci-cd.md) · [docs/spec-full-shell.md](./docs/spec-full-shell.md)
+  · [docs/design-brief.md](./docs/design-brief.md) · [docs/tickets.md](./docs/tickets.md).
 
 ## The save endpoint
 
-Already written, so you don't spend time on boilerplate:
-
-```
-GET    /api/quote     returns the current quote
-PATCH  /api/quote     body: { lineId, commPct?, mrkpPct?, nett? }  returns the updated quote
-DELETE /api/quote     restores the seed data
-```
-
-PATCH has a deliberate 600ms delay. Saving is not instant in the real product.
-
-The store is an in-memory object on the server. It works locally and on Vercel.
-On Vercel it resets when the instance goes cold — that is expected and fine.
-
-Replace any of this if you prefer something else.
-
-## Deploying
-
-Push to a GitHub repo, then import it at vercel.com. No environment variables,
-no build configuration. The free tier is fine.
+`GET / PATCH / DELETE /api/quote`. PATCH has a deliberate 600ms delay; `?fail=1`
+forces a failure so the rollback path is testable. The store is in-memory and
+resets on a Vercel cold start — expected and fine for this exercise; the seam for
+real (Supabase) persistence is described in `docs/beyond-the-brief.md`.
