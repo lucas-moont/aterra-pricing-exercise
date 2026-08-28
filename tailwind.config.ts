@@ -31,7 +31,11 @@ const config: Config = {
           soft: token("--terracotta-soft"),
         },
         positive: { DEFAULT: token("--positive"), soft: token("--positive-soft") },
-        danger: { DEFAULT: token("--danger"), soft: token("--danger-soft") },
+        danger: {
+          DEFAULT: token("--danger"),
+          soft: token("--danger-soft"),
+          row: token("--danger-row"),
+        },
         warn: { DEFAULT: token("--warn"), soft: token("--warn-soft") },
         link: token("--link"),
       },

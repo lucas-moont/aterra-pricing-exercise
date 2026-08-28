@@ -31,6 +31,7 @@
   --positive-soft: 222 232 222;
   --danger: 185 67 50;
   --danger-soft: 246 228 223;
+  --danger-row: 233 188 181; /* alarming full-row tint for a below-cost line (from #c2382c) */
   --warn: 156 118 32;
   --warn-soft: 245 235 213;
   --link: 77 116 176;
@@ -58,6 +59,7 @@
   --positive-soft: 37 55 43;
   --danger: 227 133 115;
   --danger-soft: 59 38 34;
+  --danger-row: 97 40 31; /* deep alarming red for a below-cost line in dark mode */
   --warn: 220 177 93;
   --warn-soft: 57 49 29;
   --link: 127 166 216;

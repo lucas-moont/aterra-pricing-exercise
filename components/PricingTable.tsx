@@ -140,7 +140,9 @@ function Row({
   return (
     <tr
       id={`line-${line.id}`}
-      className={`border-b border-line2 bg-row align-middle ${saving ? "opacity-60" : ""}`}
+      className={`border-b border-line2 align-middle ${
+        p.belowCost ? "bg-danger-row" : "bg-row"
+      } ${saving ? "opacity-60" : ""}`}
     >
       <td className="px-3 py-3.5">
         <input type="checkbox" className="accent-terracotta" aria-label={`Select ${line.service}`} />
