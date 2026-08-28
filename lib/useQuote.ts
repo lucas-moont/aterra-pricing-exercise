@@ -26,6 +26,7 @@ export function useQuote(initial: Quote) {
 
   const [savingLines, setSavingLines] = useState<Record<string, boolean>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const pricing = useMemo(() => priceQuote(quote), [quote]);
 
@@ -70,12 +71,14 @@ export function useQuote(initial: Quote) {
       setSavingLines({});
       setSaveError(null);
       setQuote(serverQuote);
+      setNotice("Markups reset to the original quote.");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Reset failed");
     }
   }, []);
 
   const dismissSaveError = useCallback(() => setSaveError(null), []);
+  const dismissNotice = useCallback(() => setNotice(null), []);
 
   return {
     quote,
@@ -87,5 +90,7 @@ export function useQuote(initial: Quote) {
     savingLines,
     saveError,
     dismissSaveError,
+    notice,
+    dismissNotice,
   };
 }

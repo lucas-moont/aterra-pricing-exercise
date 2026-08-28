@@ -2,19 +2,42 @@
 
 import React from "react";
 
-// A non-destructive save-failure notice. Presentational only — render it where
-// `saveError` from useQuote is available (see the wiring note in Épico C).
-export function Toast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+// A small corner toast. "error" is assertive and stays until dismissed (a failed
+// save the consultant must notice); "info" is polite and auto-dismisses (a
+// confirmation like a markup reset). The message is passed in full — the caller
+// owns the wording.
+export function Toast({
+  message,
+  onDismiss,
+  variant = "error",
+  autoDismissMs,
+}: {
+  message: string;
+  onDismiss: () => void;
+  variant?: "error" | "info";
+  autoDismissMs?: number;
+}) {
+  React.useEffect(() => {
+    if (!autoDismissMs) return;
+    const t = window.setTimeout(onDismiss, autoDismissMs);
+    return () => window.clearTimeout(t);
+  }, [autoDismissMs, onDismiss]);
+
+  const tone =
+    variant === "error"
+      ? "border-danger/30 bg-danger-soft text-danger"
+      : "border-line bg-panel text-ink";
+
   return (
     <div
-      role="alert"
-      className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-lg border border-danger/30 bg-danger-soft px-4 py-3 text-[13px] text-danger shadow-card"
+      role={variant === "error" ? "alert" : "status"}
+      className={`fixed bottom-4 right-4 z-[60] flex items-center gap-3 rounded-lg border px-4 py-3 text-[13px] shadow-card ${tone}`}
     >
-      <span>{message} — your change was rolled back.</span>
+      <span>{message}</span>
       <button
         type="button"
         onClick={onDismiss}
-        className="rounded border border-danger/40 px-2 py-0.5 text-[12px] hover:bg-white/40"
+        className="rounded border border-current px-2 py-0.5 text-[12px] opacity-70 hover:opacity-100"
       >
         Dismiss
       </button>
