@@ -7,20 +7,19 @@ import { patchLine, resetQuoteRequest } from "./apiClient";
 
 export type EditableField = "commPct" | "mrkpPct";
 
-// Owns the live edit state, optimistic persistence, and rollback for the screen.
+// Owns the live edit state, optimistic persistence, and rollback.
 //
-// The working `quote` is the single source of truth for rendering; every derived
-// number is recomputed from it via the pure engine, so the table can never drift.
-// An edit is applied to the working copy immediately (so the numbers move at
-// once), then saved in the background. On a failed save the line is rolled back
-// to its last server-confirmed value and an error is surfaced — the consultant is
+// Editing is split in two so the numbers can update on every keystroke without
+// saving on every keystroke: `editLine` updates the working copy locally (the
+// budget and totals recompute at once, no network); `commitLine` persists — it is
+// called on blur / Enter / a stepper click. A failed commit rolls the line back
+// to its last server-confirmed value and surfaces an error, so the consultant is
 // never left believing a change saved when it did not.
 export function useQuote(initial: Quote) {
   const [quote, setQuote] = useState<Quote>(initial);
 
-  // Last server-confirmed quote, used to roll a line back when its save fails.
   const savedRef = useRef<Quote>(initial);
-  // Per-line in-flight token: a newer edit supersedes a slow older save
+  // Per-line in-flight token: a newer commit supersedes a slow older save
   // (latest-write-wins), so a stale response can't clobber a newer value.
   const tokenRef = useRef<Record<string, number>>({});
 
@@ -30,37 +29,39 @@ export function useQuote(initial: Quote) {
 
   const pricing = useMemo(() => priceQuote(quote), [quote]);
 
-  const setLineField = useCallback((id: string, field: EditableField, value: number) => {
-    // Optimistic: update the working copy now so everything recomputes at once.
+  // Live, local-only update — recompute as the consultant types, no persistence.
+  const editLine = useCallback((id: string, field: EditableField, value: number) => {
     setQuote((q) => ({
       ...q,
       lines: q.lines.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
     }));
-
-    const token = (tokenRef.current[id] ?? 0) + 1;
-    tokenRef.current[id] = token;
-    setSavingLines((s) => ({ ...s, [id]: true }));
-
-    patchLine(id, field, value)
-      .then((serverQuote) => {
-        if (tokenRef.current[id] !== token) return; // superseded by a newer edit
-        savedRef.current = serverQuote;
-        setSavingLines((s) => ({ ...s, [id]: false }));
-      })
-      .catch((err) => {
-        if (tokenRef.current[id] !== token) return;
-        // Roll the edited field back to its last confirmed value.
-        const savedLine = savedRef.current.lines.find((l) => l.id === id);
-        if (savedLine) {
-          setQuote((q) => ({
-            ...q,
-            lines: q.lines.map((l) => (l.id === id ? { ...l, [field]: savedLine[field] } : l)),
-          }));
-        }
-        setSavingLines((s) => ({ ...s, [id]: false }));
-        setSaveError(err instanceof Error ? err.message : "Save failed");
-      });
   }, []);
+
+  // Persist a value (blur / Enter / stepper). Rolls back on failure.
+  const commitLine = useCallback(
+    (id: string, field: EditableField, value: number) => {
+      editLine(id, field, value);
+
+      const token = (tokenRef.current[id] ?? 0) + 1;
+      tokenRef.current[id] = token;
+      setSavingLines((s) => ({ ...s, [id]: true }));
+
+      patchLine(id, field, value)
+        .then((serverQuote) => {
+          if (tokenRef.current[id] !== token) return; // superseded by a newer commit
+          savedRef.current = serverQuote;
+          setSavingLines((s) => ({ ...s, [id]: false }));
+        })
+        .catch((err) => {
+          if (tokenRef.current[id] !== token) return;
+          const savedLine = savedRef.current.lines.find((l) => l.id === id);
+          if (savedLine) editLine(id, field, savedLine[field]);
+          setSavingLines((s) => ({ ...s, [id]: false }));
+          setSaveError(err instanceof Error ? err.message : "Save failed");
+        });
+    },
+    [editLine],
+  );
 
   // Restore the seed on the server (DELETE) and locally, so a refresh keeps it.
   const resetMarkups = useCallback(async () => {
@@ -83,10 +84,9 @@ export function useQuote(initial: Quote) {
   return {
     quote,
     pricing,
-    setLineField,
+    editLine,
+    commitLine,
     resetMarkups,
-    // Épico C state — the layout can opt in to show these, but persistence and
-    // rollback work whether or not they are rendered.
     savingLines,
     saveError,
     dismissSaveError,

@@ -120,14 +120,16 @@ function unitCount(units: string): string {
 function Row({
   line,
   p,
-  onEdit,
+  onEditLive,
+  onCommit,
   saving,
   onOpenDetails,
   compact,
 }: {
   line: LineItem;
   p: LinePricing;
-  onEdit: (field: EditableField, value: number) => void;
+  onEditLive: (field: EditableField, value: number) => void;
+  onCommit: (field: EditableField, value: number) => void;
   saving?: boolean;
   onOpenDetails?: (id: string) => void;
   compact?: boolean;
@@ -179,14 +181,16 @@ function Row({
       <td className="py-3.5 pr-2">
         <PercentStepper
           value={line.commPct}
-          onChange={(v) => onEdit("commPct", v)}
+          onChange={(v) => onEditLive("commPct", v)}
+          onCommit={(v) => onCommit("commPct", v)}
           ariaLabel={`${line.service} commission`}
         />
       </td>
       <td className="py-3.5 pr-2">
         <PercentStepper
           value={line.mrkpPct}
-          onChange={(v) => onEdit("mrkpPct", v)}
+          onChange={(v) => onEditLive("mrkpPct", v)}
+          onCommit={(v) => onCommit("mrkpPct", v)}
           ariaLabel={`${line.service} markup`}
         />
       </td>
@@ -278,14 +282,16 @@ function SectionHeader({
 export default function PricingTable({
   quote,
   pricing,
-  onEdit,
+  onEditLive,
+  onCommit,
   savingLines,
   onReset,
   onOpenDetails,
 }: {
   quote: Quote;
   pricing: QuotePricing;
-  onEdit: (id: string, field: EditableField, value: number) => void;
+  onEditLive: (id: string, field: EditableField, value: number) => void;
+  onCommit: (id: string, field: EditableField, value: number) => void;
   savingLines?: Record<string, boolean>;
   onReset: () => void;
   onOpenDetails?: (id: string) => void;
@@ -363,7 +369,8 @@ export default function PricingTable({
                         key={line.id}
                         line={line}
                         p={pricing.lines[line.id]}
-                        onEdit={(field, value) => onEdit(line.id, field, value)}
+                        onEditLive={(field, value) => onEditLive(line.id, field, value)}
+                        onCommit={(field, value) => onCommit(line.id, field, value)}
                         saving={!!savingLines?.[line.id]}
                         onOpenDetails={onOpenDetails}
                         compact={compact}

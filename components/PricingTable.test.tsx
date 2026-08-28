@@ -11,7 +11,8 @@ describe("PricingTable", () => {
       <PricingTable
         quote={seedQuote}
         pricing={priceQuote(seedQuote)}
-        onEdit={() => {}}
+        onEditLive={() => {}}
+        onCommit={() => {}}
         onReset={() => {}}
         onOpenDetails={onOpenDetails}
       />,

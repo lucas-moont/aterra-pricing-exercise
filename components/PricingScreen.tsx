@@ -13,7 +13,8 @@ export default function PricingScreen({ initial }: { initial: Quote }) {
   const {
     quote,
     pricing,
-    setLineField,
+    editLine,
+    commitLine,
     resetMarkups,
     savingLines,
     saveError,
@@ -68,7 +69,8 @@ export default function PricingScreen({ initial }: { initial: Quote }) {
           <PricingTable
             quote={quote}
             pricing={pricing}
-            onEdit={setLineField}
+            onEditLive={editLine}
+            onCommit={commitLine}
             savingLines={savingLines}
             onReset={resetMarkups}
             onOpenDetails={setDetailId}
