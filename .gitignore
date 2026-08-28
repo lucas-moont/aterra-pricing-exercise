@@ -1,0 +1,14 @@
+node_modules
+.next
+.env*.local
+next-env.d.ts
+
+# test + build artifacts
+coverage
+playwright-report
+test-results
+
+# vercel
+.vercel
+
+.vercel
