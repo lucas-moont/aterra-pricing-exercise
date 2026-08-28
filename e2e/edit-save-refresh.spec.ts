@@ -18,6 +18,8 @@ test("editing a markup persists across a reload", async ({ page }) => {
   await page.waitForTimeout(1500);
   await page.reload();
 
-  const input = page.getByLabel(/^Hemingways Nairobi.*markup$/);
+  // Target the input by role: the stepper's wrapper <div role="group"> shares the
+  // same aria-label, so getByLabel would match both. role "textbox" is the input.
+  const input = page.getByRole("textbox", { name: /^Hemingways Nairobi.*markup$/ });
   await expect(input).toHaveValue("19"); // seed 18 + one increment, persisted
 });
