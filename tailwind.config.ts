@@ -1,21 +1,39 @@
 import type { Config } from "tailwindcss";
 
-// Palette + type from the founder reference screens (docs/design-brief.md).
+// Each colour is an RGB-channel CSS variable (defined in app/globals.css) wrapped
+// so Tailwind's <alpha-value> opacity modifiers keep working. Light and dark both
+// flow from the variables — the class names never change between themes.
+const token = (name: string) => `rgb(var(${name}) / <alpha-value>)`;
+
 const config: Config = {
+  darkMode: "class",
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        cream: "#F9F4F0",
-        panel: "#FBF7F1",
-        ink: "#26221C",
-        muted: "#8A8178",
-        line: "#E8DCC8",
-        terracotta: { DEFAULT: "#B86844", dark: "#A76141", soft: "#F4DECF" },
-        positive: "#3E7C55",
-        danger: { DEFAULT: "#B94332", soft: "#F6E4DF" },
-        warn: { DEFAULT: "#9C7620", soft: "#F5EBD5" },
-        sand: "#E8D9C8",
+        cream: token("--bg"),
+        panel: token("--surface"),
+        surface2: token("--surface-2"),
+        surface3: token("--surface-3"),
+        elevated: token("--elevated"),
+        row: token("--row"),
+        ink: token("--ink"),
+        ink2: token("--ink-2"),
+        muted: token("--muted"),
+        faint: token("--faint"),
+        line: token("--line"),
+        line2: token("--line-2"),
+        hover: token("--hover"),
+        sand: token("--sand"),
+        terracotta: {
+          DEFAULT: token("--terracotta"),
+          dark: token("--terracotta-dark"),
+          soft: token("--terracotta-soft"),
+        },
+        positive: { DEFAULT: token("--positive"), soft: token("--positive-soft") },
+        danger: { DEFAULT: token("--danger"), soft: token("--danger-soft") },
+        warn: { DEFAULT: token("--warn"), soft: token("--warn-soft") },
+        link: token("--link"),
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Georgia", "serif"],

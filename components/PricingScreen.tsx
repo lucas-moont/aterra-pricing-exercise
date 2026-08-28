@@ -32,20 +32,20 @@ export default function PricingScreen({ initial }: { initial: Quote }) {
         <TopBar />
 
         <div className="flex-1 overflow-auto px-6 py-5">
-          <section className="mb-5 rounded-xl border border-line bg-white px-5 py-4">
+          <section className="mb-5 rounded-xl border border-line bg-elevated px-5 py-4">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                 <h1 className="font-serif text-[26px] font-normal leading-none tracking-tight text-ink">
                   New proposal
                 </h1>
-                <p className="text-[13px] font-normal leading-none text-[#8A8178]">
+                <p className="text-[13px] font-normal leading-none text-muted">
                   · {quote.client} · {quote.trip} · {quote.dates} · via {quote.advisor}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="rounded-md border border-line bg-white px-5 py-1 text-[13px] font-normal text-ink hover:bg-[#F4DECF]"
+                  className="rounded-md border border-line bg-elevated px-5 py-1 text-[13px] font-normal text-ink hover:bg-hover"
                 >
                   Back
                 </button>

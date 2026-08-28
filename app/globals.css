@@ -2,6 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme tokens as space-separated RGB channels so Tailwind can apply opacity
+ * (text-ink/70, bg-ink/30, ...). Light values equal the original hand-picked
+ * hexes, so light mode looks identical; the .dark block re-maps the same roles
+ * to a warm dark palette. Components reference roles (bg-surface, text-ink,
+ * border-line) — never raw hex — so both themes flow from here.
+ */
+:root {
+  --bg: 249 244 240;
+  --surface: 251 247 241;
+  --surface-2: 252 243 228;
+  --surface-3: 243 230 220;
+  --elevated: 255 255 255;
+  --row: 253 246 235;
+  --ink: 38 34 28;
+  --ink-2: 58 50 44;
+  --muted: 138 129 120;
+  --faint: 160 152 144;
+  --line: 232 220 200;
+  --line-2: 237 230 220;
+  --hover: 244 222 207;
+  --sand: 232 217 200;
+  --terracotta: 184 104 68;
+  --terracotta-dark: 167 97 65;
+  --terracotta-soft: 244 222 207;
+  --positive: 62 124 85;
+  --positive-soft: 222 232 222;
+  --danger: 185 67 50;
+  --danger-soft: 246 228 223;
+  --warn: 156 118 32;
+  --warn-soft: 245 235 213;
+  --link: 77 116 176;
+}
+
+:root.dark {
+  --bg: 23 20 15;
+  --surface: 32 28 22;
+  --surface-2: 36 31 24;
+  --surface-3: 42 35 27;
+  --elevated: 45 39 31;
+  --row: 33 29 22;
+  --ink: 243 236 225;
+  --ink-2: 226 217 204;
+  --muted: 169 159 146;
+  --faint: 133 124 111;
+  --line: 60 53 43;
+  --line-2: 52 46 37;
+  --hover: 58 45 35;
+  --sand: 54 47 38;
+  --terracotta: 205 129 90;
+  --terracotta-dark: 184 104 68;
+  --terracotta-soft: 62 45 35;
+  --positive: 111 192 141;
+  --positive-soft: 37 55 43;
+  --danger: 227 133 115;
+  --danger-soft: 59 38 34;
+  --warn: 220 177 93;
+  --warn-soft: 57 49 29;
+  --link: 127 166 216;
+}
+
 body {
   @apply bg-cream text-ink font-sans antialiased;
 }

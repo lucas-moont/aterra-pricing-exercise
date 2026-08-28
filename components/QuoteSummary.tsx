@@ -39,9 +39,9 @@ export default function QuoteSummary({
 
   return (
     <section>
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[12px] text-[#6B635C]">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-[12px] text-muted">
         <p className="min-w-0">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3A322C]">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink2">
             Budget
           </span>
           <span className="ml-2">
@@ -56,13 +56,13 @@ export default function QuoteSummary({
         </p>
         <p className="tabular-nums">
           <span className="uppercase">Nett</span>{" "}
-          <span className="font-semibold text-[#3A322C]">{formatMoney(supplierNett)}</span>
+          <span className="font-semibold text-ink2">{formatMoney(supplierNett)}</span>
           <span> · </span>
           <span className="uppercase">Vat</span>{" "}
-          <span className="font-semibold text-[#3A322C]">{formatMoney(vat)}</span>
+          <span className="font-semibold text-ink2">{formatMoney(vat)}</span>
           <span> · </span>
           <span className="uppercase">Gp</span>{" "}
-          <span className="font-semibold text-[#3A322C]">{formatMoney(pricing.totals.gp)}</span>
+          <span className="font-semibold text-ink2">{formatMoney(pricing.totals.gp)}</span>
           <span> · </span>
           <span className={`font-semibold ${gpHealthy ? "text-positive" : "text-warn"}`}>
             {formatGpPct(pricing.totals.blendedGpPct)}
@@ -71,7 +71,7 @@ export default function QuoteSummary({
       </div>
 
       <div className="mt-1.5">
-        <div className="relative h-5 overflow-hidden rounded-full bg-[#EAE0D7]">
+        <div className="relative h-5 overflow-hidden rounded-full bg-sand">
           {ceiling.over ? (
             <div className="absolute inset-0 bg-danger" />
           ) : (
@@ -79,23 +79,24 @@ export default function QuoteSummary({
               className="absolute inset-y-0 left-0"
               style={{
                 width: `${Math.min(100, clientPct)}%`,
-                background: "linear-gradient(90deg, #D0BCB2 0%, #B86844 100%)",
+                background:
+                  "linear-gradient(90deg, rgb(var(--sand)) 0%, rgb(var(--terracotta)) 100%)",
               }}
             />
           )}
           <div className="relative z-[1] flex h-full items-center justify-between px-3">
-            <span className="truncate text-[11px] font-semibold leading-none text-[#2C241E]">
+            <span className="truncate text-[11px] font-semibold leading-none text-ink">
               {formatMoney(clientPays)} client price
             </span>
             {showHeadroomInBar && (
-              <span className="shrink-0 text-[11px] leading-none text-[#6B635C]">
+              <span className="shrink-0 text-[11px] leading-none text-muted">
                 headroom {formatMoney(ceiling.delta)}
               </span>
             )}
           </div>
           {!ceiling.over && (
             <div
-              className="pointer-events-none absolute inset-y-0 z-[2] w-[2px] -translate-x-1/2 rounded-full bg-[#2C241E]/55"
+              className="pointer-events-none absolute inset-y-0 z-[2] w-[2px] -translate-x-1/2 rounded-full bg-ink/55"
               style={{ left: `${Math.min(99.4, Math.max(clientPct, 1.2))}%` }}
               aria-hidden
             />
@@ -103,9 +104,9 @@ export default function QuoteSummary({
         </div>
       </div>
 
-      <div className="mt-1.5 flex flex-wrap items-center gap-4 text-[11px] text-[#6B635C]">
+      <div className="mt-1.5 flex flex-wrap items-center gap-4 text-[11px] text-muted">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-[1px] bg-[#E2E3DE]" />
+          <span className="h-2 w-2 rounded-[1px] bg-sand" />
           supplier NETT
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -113,7 +114,7 @@ export default function QuoteSummary({
           client price
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-px bg-[#3A322C]" />
+          <span className="h-2.5 w-px bg-ink2" />
           client ceiling
         </span>
       </div>
